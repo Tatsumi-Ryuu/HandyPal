@@ -21,3 +21,5 @@
 前端使用vue+bootstrap
 
 物联网部分使用项目 https://github.com/MR-Addict/esp32-async-webserver-api/tree/main
+
+收纳小助手使用项目 https://github.com/zixiiu/Digital_Life_Server
