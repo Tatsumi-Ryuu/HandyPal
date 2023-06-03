@@ -1,0 +1,268 @@
+:root {
+    --primary: #7749f8;
+    --secondary: #ebe5fc;
+}
+
+body {
+    background-color: #f5f7fe;
+}
+
+#app {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+header {
+    height: 120px;
+    padding: 10px 20px 0;
+}
+
+.select-shelfs .select {
+    border: 1px solid #855df8;
+    border-radius: 5px;
+    height: 32px;
+    width: 160px;
+    padding: 0 20px;
+    background: url(../img/down.svg) no-repeat 130px;
+}
+
+.select-shelfs .dropdown > div {
+    width: 100%;
+}
+
+.select-shelfs .dropdown-menu {
+    border-radius: 6px;
+    margin-top: -1px;
+}
+
+.select-shelfs .dropdown-item:hover, .dropdown-item:focus {
+    background-color: var(--secondary);
+}
+
+.select-shelfs .dropdown-item:active {
+    background-color: var(--primary);
+}
+
+header .title {
+    margin-top: 5px;
+    font-size: 24px;
+    margin-left: 0.5em;
+    font-weight: bold;
+    color: #5b33ce;
+}
+
+.user.dropdown-menu {
+    color: #62666d;
+    height: 118px;
+    width: 110px;
+    background-color: var(--secondary);
+    border-radius: 20px;
+    padding: 0px 10px;
+    margin-left: -60px;
+    margin-top: -49px;
+    min-width: unset;
+    border: none;
+}
+
+.user.show {
+    display: flex;
+}
+
+.user > div {
+    flex-grow: 1;
+}
+
+.user > div:not(:last-child) {
+    border-bottom: #ddd8ee 2px dashed;
+}
+
+.user img, img.avatar {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+}
+
+.avatar {
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.button-row .btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    width: 150px;
+    font-weight: bold;
+    height: 50px;
+}
+
+.model-container {
+    margin: 18px 20px;
+    height: 470px;
+    border-radius: 20px;
+    background-color: #e0ecff;
+    box-shadow: inset 0 5px 5px rgba(152, 152, 152, 0.562);
+    padding-top: 35px;
+}
+
+.model-name {
+    color: #e0ecff;
+    background-color: #17a2b8;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    height: 32px;
+    width: 100px;
+    border-radius: 32px;
+}
+
+.open .model-name {
+    background-color: #abb5be;
+}
+
+.open img {
+    filter: grayscale();
+}
+
+.bottom-nav {
+    background-color: #f8f9fa;
+    height: 100px;
+    width: 100vw;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -8px 8px rgba(0, 0, 0, 0.046);
+    justify-content: space-evenly;
+}
+
+.bottom-nav .nav-item {
+    width: 50px;
+}
+
+.bottom-nav .nav-item:not(.active) {
+    filter: grayscale();
+    opacity: 0.4;
+}
+
+.modal-page {
+    padding-top: 80px;
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: #f6f8ff;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    transition: transform 0.3s ease-in-out; 
+}
+
+.modal-page-header {
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    padding: 0 15px;
+    background-color: #fff;
+    height: 80px;
+    border-radius: 0 0 20px 20px;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.modal-page-header .back {
+    width: 48px;
+    height: 48px;
+    background-color: #f6f8ff;
+    stroke: var(--primary);
+    color: var(--primary);
+    font-size: 38px;
+    border-radius: 10px;
+    margin-right: 20px;
+}
+
+.modal-page-header .back:hover {
+    background-color: #ebe5fc;
+}
+
+.modal-page-header .back:active {
+    background-color: #e0d9fa;
+}
+
+.modal-page-content {
+    padding: 10px 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.message-container, .message-container .header {
+    width: 100%;
+    padding: 10px 10px;
+}
+
+.message-container .header {
+    height: 48px;
+}
+
+.message-container .header .title {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.message-container .header .read {
+    background-color: #ebe5fc;
+    font-size: 12px;
+    padding: 5px 15px;
+    border-radius: 20px;
+    color: var(--primary);
+}
+
+.message-container .header .read:active {
+    background-color: #e0d9fa;
+}
+
+.message-inner {
+    padding: 10px 0;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+ul.message-inner {
+    padding-inline-start: unset;
+}
+
+.message-inner .empty {
+    text-align: center;
+    padding: 10px 0;
+    color: #0000004c;
+    font-size: 15px;
+}
+
+.message-inner li {
+    height: 58px;
+    list-style: none;
+    padding: 8px 16px;
+}
+
+.message-inner li .type {
+    color: #000000a4;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: 等线 Light;
+}
+
+.message-inner li .icon {
+    height: 30px;
+}
+
+.message-inner li .content {
+    color: #000;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 等线 Light;
+}
+
+.message-inner li .time {
+    position: relative;
+    top: 0;
+    margin-bottom: auto;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: 等线 Light;
+}

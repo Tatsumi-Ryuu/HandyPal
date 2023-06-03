@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0" />
+  <link rel="icon" href="./static/img/logo.png" />
+  <script src="./static/js/vue.global.js"></script>
+  <script src="./static/js/jquery-3.7.0.min.js"></script>
+  <script src="./static/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="./static/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="./static/css/index.css" />
+  <title>手心收纳</title>
+</head>
+
+<body>
+  <div id="app" class="d-flex flex-column justify-content-between">
+    <header class="d-flex flex-row justify-content-between">
+      <div class="d-flex flex-column">
+        <h1 class="navbar-brand title">设备联动</h1>
+        <div class="select-shelfs dropdown">
+          <div class="select d-flex align-items-center" data-toggle="dropdown" aria-expanded="false">
+            {{shelfs[shelfIndex]}}
+          </div>
+          <div class="dropdown-menu">
+            <span v-for="(item,index) in shelfs" :key="index" class="dropdown-item"
+              @click="shelfIndex = index">{{item}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="dropdown">
+        <img class="avatar" 
+          :src="`./static/img/${currentUser.img}`" 
+          alt="头像" data-toggle="dropdown" arira-expanded="false" 
+        />
+        <div class="user flex-column dropdown-menu">
+          <div v-for="item in userList" :key="item.role"
+           class="d-flex flex-row justify-content-between align-items-center"
+           @click="currentUser = item"
+          >
+            <span class="user-name">{{item.name}}</span>
+            <img :src="`./static/img/${item.img}`" alt="孩子头像" />
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="button-row d-flex flex-row justify-content-around">
+      <button class="btn btn-primary" :disabled="currentUser.role!=='parent'" @click="showLog">抽屉通知</button>
+      <button class="btn btn-primary" :disabled="currentUser.role!=='parent'" @click="authUser">授权</button>
+    </div>
+    <div class="model-container d-flex flex-column">
+      <div v-for="(item,index) in drawers" :key="index" :class="{
+          'open': item.status,
+          'model': true,
+          'd-flex': true,
+          'flex-column': true,
+          'justify-content-center': true,
+          'align-items-center': true
+        }">
+        <img :src="`./static/img/${item.img}`" alt="抽屉" class="model-img" />
+        <span class="model-name d-flex justify-content-center align-items-center"
+          data-toggle="modal" data-target="#changeName"
+          @click="activeIndex = index; nextName = item.name"
+        >{{item.name}}</span>
+      </div>
+    </div>
+    <nav class="bottom-nav d-flex flex-row">
+      <img v-for="(item,index) in navs" :key="index" :src="`./static/img/${item.img}`" :class="{
+          'nav-item': true,
+          'active': navIndex === index
+        }" :alt="item.name" @click="navIndex = index" />
+    </nav>
+    <div class="modal-page" :style="{
+      transform: logVisible ? 'translateX(0)' : 'translateX(100%)'
+    }">
+      <div class="modal-page-header d-flex align-items-center">
+        <div class="back d-flex align-items-center justify-content-center" @click="logVisible = false">
+          <?xml version="1.0" encoding="UTF-8"?><svg width="1em" height="1em" viewBox="0 0 48 48" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 23.9917H36" stroke="{color}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M24 36L12 24L24 12" stroke="{color}" stroke-width="4" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </div>
+        <span class="modal-page-title">抽屉通知</span>
+      </div>
+      <div class="modal-page-content d-flex flex-column">
+        <div class="message-container d-flex flex-column">
+          <div class="header d-flex flex-row justify-content-between align-items-center">
+            <span class="title">未读通知</span>
+            <div class="read"
+              @click="logs = logs.map((item) => ({...item, read: true}))"
+            >全部已读</div>
+          </div>
+          <ul class="message-inner">
+            <li v-for="item in unreadLogs"
+              class="d-flex flex-row justify-content-between"
+            >
+              <div class="d-flex flex-row align-items-center">
+                <img class="mr-2 icon" src="./static/img/message.svg" alt="消息" />
+                <div class="d-flex flex-column justify-content-between h-100">
+                  <span class="type">{{item.type}}</span>
+                  <span class="content">{{item.content}}</span>
+                </div>
+              </div>
+              <span class="time">{{formatTime(item.time)}}</span>
+            </li>
+            <div v-if="unreadLogs.length === 0" class="empty">
+              没有未读通知
+            </div>
+          </ul>
+        </div>
+        <div class="message-container d-flex flex-column">
+          <div class="header d-flex flex-row justify-content-between align-items-center">
+            <span class="title">已读通知</span>
+            <div class="read"
+              @click="logs = logs.filter(({read}) => !read)"
+            >清空已读</div>
+          </div>
+          <ul class="message-inner">
+            <li v-for="item in readLogs"
+              class="d-flex flex-row justify-content-between"
+            >
+              <div class="d-flex flex-row align-items-center">
+                <img class="mr-2 icon" src="./static/img/message.svg" alt="消息" />
+                <div class="d-flex flex-column justify-content-between h-100">
+                  <span class="type">{{item.type}}</span>
+                  <span class="content">{{item.content}}</span>
+                </div>
+              </div>
+              <span class="time">{{formatTime(item.time)}}</span>
+            </li>
+            <div v-if="readLogs.length === 0" class="empty">
+              没有已读通知
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="changeName" tabindex="-1" aria-labelledby="changeNameLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="changeNameLabel">修改抽屉名称</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input class="form-control" v-model="nextName" />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary"
+              @click="onChangeName"
+            >保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  let baseUrl = 'http://172.18.66.132'
+  baseUrl = prompt('请输入baseUrl', baseUrl)
+  const { createApp, ref, computed, watch, onMounted } = Vue
+  createApp({
+    setup() {
+      const shelfs = ["衣物收纳", "书籍收纳", "玩具收纳"]
+      const shelfIndex = ref(2)
+      const users = [
+        {
+          name: '孩子',
+          img: 'child.png',
+          role: 'child',
+        },
+        {
+          name: '家长',
+          img: 'parent.png',
+          role: 'parent'
+        }
+      ]
+      const currentUser = ref(users[0])
+      const userList = computed(() => {
+        return [
+          currentUser.value,
+          ...users.filter(({role}) => role !== currentUser.value.role)
+        ]
+      })
+
+      const drawers = ref(JSON.parse(localStorage.getItem('drawers')) || [
+        {
+          name: '毛绒玩具',
+          status: false,
+          img: 'plush.svg'
+        },
+        {
+          name: '积木玩具',
+          status: true,
+          img: 'block.svg'
+        },
+        {
+          name: '益智玩具',
+          status: false,
+          img: 'puzzle.svg'
+        }
+      ])
+      
+      watch(drawers, (val) => {
+        localStorage.setItem('drawers', JSON.stringify(val))
+      })
+
+      const navs = [
+        {
+          name: '首页',
+          img: 'home.svg'
+        },
+        {
+          name: '应用',
+          img: 'application.svg'
+        },
+        {
+          name: '语音',
+          img: 'voice.svg'
+        },
+        {
+          name: '追踪',
+          img: 'trace.svg'
+        }
+      ]
+      const navIndex = ref(0)
+
+      const logVisible = ref(false)
+
+      const logs = ref(JSON.parse(localStorage.getItem('logs')) || [])
+
+      watch(logs, (val) => {
+        localStorage.setItem('logs', JSON.stringify(val))
+      })
+
+      const unreadLogs = computed(() => {
+        return logs.value.filter(({read}) => !read)
+      })
+      const readLogs = computed(() => {
+        return logs.value.filter(({read}) => read)
+      })
+
+      const activeIndex = ref(0)
+      const nextName = ref('')
+
+      const showLog = () => {
+        logVisible.value = true
+      }
+      const authUser = () => {
+        console.log('authUser')
+      }
+
+      const formatTime = (time) => {
+        const date = new Date(time)
+        const month = date.getMonth() + 1
+        const day = date.getDate()
+        const hour = date.getHours().toString().padStart(2, '0')
+        const minute = date.getMinutes().toString().padStart(2, '0')
+        return `${month}.${day} ${hour}:${minute}`
+      }
+
+      const refreshDrawer = async (loop = false) => {
+        try {
+          const res = await fetch(baseUrl+'/api')
+          const data = await res.json()
+          let drawer = drawers.value[1]
+          if (data.status===false && drawer.status===true) {
+            if(currentUser.value.role!=='parent') {
+              logs.value = [
+                {
+                  type: '玩具收纳',
+                  content: '抽屉（积木玩具）被打开',
+                  time: Date.now(),
+                  read: false
+                },
+                ...logs.value
+              ]
+            }
+          }
+          if (data && (data.name!==drawer.name || data.status!==drawer.status)) {
+            drawer = {
+              ...drawer,
+              ...data,
+            }
+            drawers.value = [
+              ...drawers.value.slice(0, 1),
+              drawer,
+              ...drawers.value.slice(2)
+            ]
+          }
+        } catch (error) {
+          console.error(error)
+        }
+        if (loop) {
+          setTimeout(() => {
+            refreshDrawer(true)
+          }, 500)
+        }
+      }
+
+      const onChangeName = async () => {
+        if(activeIndex.value===1) {
+          const data = new FormData();
+          data.append("name", nextName.value);
+          await fetch(baseUrl + '/api', { method: "PUT", body: data })
+        } else {
+          drawers.value = [
+            ...drawers.value.slice(0, activeIndex.value),
+            {
+              ...drawers.value[activeIndex.value],
+              name: nextName.value
+            },
+            ...drawers.value.slice(activeIndex.value + 1)
+          ]
+        }
+        $('#changeName').modal('hide')
+      }
+
+      onMounted(() => {
+        refreshDrawer(true)
+      })
+
+      return {
+        shelfs,
+        shelfIndex,
+        userList,
+        currentUser,
+        drawers,
+        navs,
+        navIndex,
+        logVisible,
+        logs,
+        unreadLogs,
+        readLogs,
+        activeIndex,
+        nextName,
+        showLog,
+        authUser,
+        onChangeName,
+        formatTime
+      }
+    }
+  }).mount('#app')
+</script>
+
+</html>
